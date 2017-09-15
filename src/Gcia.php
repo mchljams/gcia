@@ -42,7 +42,7 @@ class Gcia
         $this->key = $key;
     }
 
-    private function buildRequestURL($type = null, $params) {
+    private function buildRequestURL($type = null, $params = array()) {
       // add the API key into the query string
       $params['key'] = $this->key;
       /*
@@ -96,9 +96,7 @@ class Gcia
      */
     public function electionQuery() {
       //
-      $params = array();
-      //
-      $this->url = $this->buildRequestURL('elections',$params);
+      $this->url = $this->buildRequestURL('elections');
       //
       return $this;
     }
@@ -150,14 +148,17 @@ class Gcia
     /**
      * Looks up representative information for a single geographic division.
      */
-    public function representativeInfoByDivision() {
+    public function representativeInfoByDivision($ocdID) {
       //
-      $params = array();
-      //
-      $ocdID = '';
-      //
-      $this->url = $this->buildRequestURL('representatives/' . $ocdID,$params);
-      //
+      if($ocdID) {
+        // The ocdID string must be url encoded so it can be concatenated onto the request url
+        $ocdID = urlencode($ocdID);
+        //
+        $this->url = $this->buildRequestURL('representatives/' . $ocdID);
+        //
+        return $this;
+      }
+
       return null;
     }
 
