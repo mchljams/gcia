@@ -17,6 +17,6 @@ class GciaTest extends \PHPUnit_Framework_TestCase
       $this->expectExceptionMessage('Your API key is required and must be a string.');
       $this->expectException('Exception');
 
-      $spun = new Gcia();
+      $gcia = new Gcia();
   }
 }
