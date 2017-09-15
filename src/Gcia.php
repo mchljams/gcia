@@ -13,7 +13,7 @@ class Gcia
 {
     // the api base url
     private $base = 'https://www.googleapis.com/civicinfo/';
-    // the string containing spintax
+    // the string containing the API key
     private $key;
     // the api version
     private $version = 'v2';
