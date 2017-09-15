@@ -20,6 +20,8 @@ Change directory to the root of this package and run:
 
 **Run Unit Tests With HTML Coverage Report**
 
+(xdebug required)
+
 ```
 ./vendor/bin/phpunit --coverage-html coverage
 ```
