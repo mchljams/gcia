@@ -61,16 +61,17 @@ class Gcia
       return $url;
     }
 
+    /* Just a utility method to verify what HTTP request was made */
     public function getRequestURL() {
       //
       if($this->url){
-        //
+
         return $this->url;
       }
       throw new \Exception('Request URL Not Set.');
     }
 
-    public function execute() {
+    private function execute() {
 
       $ch = curl_init();
       // Disable SSL verification
@@ -78,11 +79,15 @@ class Gcia
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
       curl_setopt($ch, CURLOPT_URL, $this->getRequestURL());
 
-      $this->result = curl_exec($ch);
-
-      curl_close($ch);
-
-      return $this;
+      $result = curl_exec($ch);
+      // Check if any error occurred
+      if(!curl_errno($ch))
+      {
+          $this->result = $result;
+          curl_close($ch);
+          return $this;
+      }
+      throw new \Exception('Curl error: ' . curl_error($ch));
 
     }
 
@@ -114,6 +119,8 @@ class Gcia
       //
       $this->url = $this->buildRequestURL('elections');
       //
+      $this->execute();
+      //
       return $this;
     }
 
@@ -142,6 +149,8 @@ class Gcia
         //
         $this->url = $this->buildRequestURL('voterinfo',$params);
         //
+        $this->execute();
+        //
         return $this;
       }
       throw new \Exception('Address is required.');
@@ -159,7 +168,9 @@ class Gcia
         );
         //
         $this->url = $this->buildRequestURL('representatives',$params);
-
+        //
+        $this->execute();
+        //
         return $this;
       }
       throw new \Exception('Address is required.');
@@ -175,6 +186,8 @@ class Gcia
         $ocdID = urlencode($ocdID);
         //
         $this->url = $this->buildRequestURL('representatives/' . $ocdID);
+        //
+        $this->execute();
         //
         return $this;
       }
@@ -195,6 +208,8 @@ class Gcia
         );
         //
         $this->url = $this->buildRequestURL('divisions',$params);
+        //
+        $this->execute();
         //
         return $this;
       }
