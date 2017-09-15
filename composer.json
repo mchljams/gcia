@@ -3,7 +3,7 @@
     "type": "library",
     "description": "PHP Library for the Google Civic Information API",
     "keywords": ["Google", "Civic Information API", "Civic Information", "API"],
-    "homepage": "https://github.com/mchljams/spun/",
+    "homepage": "https://github.com/mchljams/gcia/",
     "license": "MIT",
     "authors": [
         {
