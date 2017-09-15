@@ -11,10 +11,10 @@ namespace Mchljams\Gcia;
  */
 class Gcia
 {
-    // the api base url
-    private $base = 'https://www.googleapis.com/civicinfo/';
     // the string containing the API key
     private $key;
+    // the api base url
+    private $base = 'https://www.googleapis.com/civicinfo/';
     // the api version
     private $version = 'v2';
     // params for a url
@@ -51,77 +51,81 @@ class Gcia
       /representatives/{ocdId}
       /divisions
     */
-    private function buildRequestURL($type = null, $params = array()) {
-      // add the API key into the query string
-      $params['key'] = $this->key;
+    private function buildRequestURL($type = null, $params = array())
+    {
+        // add the API key into the query string
+        $params['key'] = $this->key;
 
-      // assemble the request URL
-      $url = $this->base.$this->version.'/' . $type . '/?' . http_build_query($params);
+        // assemble the request URL
+        $url = $this->base.$this->version.'/' . $type . '/?' . http_build_query($params);
 
-      return $url;
+        return $url;
     }
 
     /* Just a utility method to verify what HTTP request was made */
-    public function getRequestURL() {
-      //
-      if($this->url){
-
-        return $this->url;
-      }
-      throw new \Exception('Request URL Not Set.');
+    public function getRequestURL()
+    {
+        //
+        if ($this->url) {
+            return $this->url;
+        }
+        throw new \Exception('Request URL Not Set.');
     }
 
-    private function execute() {
+    private function execute()
+    {
 
-      $ch = curl_init();
-      // Disable SSL verification
-      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-      curl_setopt($ch, CURLOPT_URL, $this->getRequestURL());
+        $ch = curl_init();
+        // Disable SSL verification
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_URL, $this->getRequestURL());
 
-      $result = curl_exec($ch);
-      // Check if any error occurred
-      if(!curl_errno($ch))
-      {
-          $this->result = $result;
-          curl_close($ch);
-          return $this;
-      }
-      throw new \Exception('Curl error: ' . curl_error($ch));
-
+        $result = curl_exec($ch);
+        // Check if any error occurred
+        if (!curl_errno($ch)) {
+            $this->result = $result;
+            curl_close($ch);
+            return $this;
+        }
+        throw new \Exception('Curl error: ' . curl_error($ch));
     }
 
-    public function getJSON() {
-      if($this->result) {
-        return $this->result;
-      }
-      throw new \Exception('No JSON result to return.');
+    public function getJSON()
+    {
+        if ($this->result) {
+            return $this->result;
+        }
+        throw new \Exception('No JSON result to return.');
     }
 
-    public function getOBJ() {
-      if($this->result) {
-        return json_decode($this->result);
-      }
-      throw new \Exception('No JSON result to return as object.');
+    public function getOBJ()
+    {
+        if ($this->result) {
+            return json_decode($this->result);
+        }
+        throw new \Exception('No JSON result to return as object.');
     }
 
-    public function getASSOC() {
-      if($this->result) {
-        return json_decode($this->result, true);
-      }
-      throw new \Exception('No JSON result to return as associative array.');
+    public function getASSOC()
+    {
+        if ($this->result) {
+            return json_decode($this->result, true);
+        }
+        throw new \Exception('No JSON result to return as associative array.');
     }
 
     /**
      * List of available elections to query.
      */
-    public function electionQuery() {
-      //
-      $this->url = $this->buildRequestURL('elections');
-      //
-      $this->execute();
-      //
-      return $this;
+    public function electionQuery()
+    {
+        //
+        $this->url = $this->buildRequestURL('elections');
+        //
+        $this->execute();
+        //
+        return $this;
     }
 
     /**
@@ -131,67 +135,72 @@ class Gcia
      *
      * Optional query parameters: electionID, officialOnly
      */
-    public function voterInfoQuery($address, $electionID = null, $officialOnly = false) {
-      //
-      if($address){
+    public function voterInfoQuery($address, $electionID = null, $officialOnly = false)
+    {
         //
-        $params = array();
-        //
-        $params['address'] = $address;
-        //
-        if($electionID != null) {
-          $params['electionID'] = $electionID;
+        if ($address) {
+            //
+            $params = array();
+            //
+            $params['address'] = $address;
+            //
+            if ($electionID != null) {
+                //
+                $params['electionID'] = $electionID;
+            }
+            //
+            if ($officialOnly === true) {
+                //
+                $params['officialOnly'] = $officialOnly;
+            }
+            //
+            $this->url = $this->buildRequestURL('voterinfo', $params);
+            //
+            $this->execute();
+            //
+            return $this;
         }
-        //
-        if($officialOnly === true) {
-          $params['officialOnly'] = $officialOnly;
-        }
-        //
-        $this->url = $this->buildRequestURL('voterinfo',$params);
-        //
-        $this->execute();
-        //
-        return $this;
-      }
-      throw new \Exception('Address is required.');
+        throw new \Exception('Address is required.');
     }
 
     /**
      * Looks up political geography and representative information for a single address.
      */
-    public function representativeInfoByAddress($address) {
-      //
-      if($address){
+    public function representativeInfoByAddress($address)
+    {
         //
-        $params = array(
-          'address' => $address
-        );
-        //
-        $this->url = $this->buildRequestURL('representatives',$params);
-        //
-        $this->execute();
-        //
-        return $this;
-      }
-      throw new \Exception('Address is required.');
+        if ($address) {
+            //
+            $params = array(
+              'address' => $address
+            );
+            //
+            $this->url = $this->buildRequestURL('representatives', $params);
+            //
+            $this->execute();
+            //
+            return $this;
+        }
+        throw new \Exception('Address is required.');
     }
 
     /**
      * Looks up representative information for a single geographic division.
      */
-    public function representativeInfoByDivision($ocdID) {
-      //
-      if($ocdID) {
-        // The ocdID string must be url encoded so it can be concatenated onto the request url
-        $ocdID = urlencode($ocdID);
+    public function representativeInfoByDivision($ocdID)
+    {
         //
-        $this->url = $this->buildRequestURL('representatives/' . $ocdID);
-        //
-        $this->execute();
-        //
-        return $this;
-      }
-      throw new \Exception('ocdID is required.');
+        if ($ocdID) {
+            // The ocdID string must be url encoded so it can be concatenated onto the request url
+            $ocdID = urlencode($ocdID);
+            //
+            $this->url = $this->buildRequestURL('representatives/' . $ocdID);
+            //
+            $this->execute();
+            //
+            return $this;
+        }
+        throw new \Exception('ocdID is required.');
     }
 
     /**
@@ -199,20 +208,21 @@ class Gcia
      * making a query an ocdID and you want an exact match it must be passed as
      * a literal string.
      */
-    public function search($query) {
-      //
-      if($query) {
+    public function search($query)
+    {
         //
-        $params = array(
-          'query' => $query
-        );
-        //
-        $this->url = $this->buildRequestURL('divisions',$params);
-        //
-        $this->execute();
-        //
-        return $this;
-      }
-      throw new \Exception('Query is required.');
+        if ($query) {
+            //
+            $params = array(
+              'query' => $query
+            );
+            //
+            $this->url = $this->buildRequestURL('divisions', $params);
+            //
+            $this->execute();
+            //
+            return $this;
+        }
+        throw new \Exception('Query is required.');
     }
 }
