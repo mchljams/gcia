@@ -25,9 +25,9 @@ class Gcia
     private $result;
 
     /**
-     * Set the API key, initialize the library
+     * Set the API key, instantiate the Google Civic Information API class.
      *
-     * @param string   $key  The Google API Key
+     * @param string $key, The Google API Key
      *
      * @throws Exception if input is not a string
      */
@@ -42,15 +42,18 @@ class Gcia
         $this->key = $key;
     }
 
-    /*
-      type must be one of the following:
-
-      /elections
-      /voterinfo
-      /representatives
-      /representatives/{ocdId}
-      /divisions
-    */
+    /**
+     * Concatenate the HTTP request URL that will be used to execute a
+     * cURL session to the API.
+     *
+     * Type must be one of the following: /elections, /voterinfo,
+     * /representatives, /representatives/{ocdId}, /divisions
+     *
+     * @param string $type, One of the API methods
+     * @param array $params, any GET parameters that should be added to the request
+     *
+     * @return string, the HTTP request URL string
+     */
     private function buildRequestURL($type = null, $params = array())
     {
         // add the API key into the query string
@@ -150,7 +153,7 @@ class Gcia
     {
         // create the HTTP request url
         $this->url = $this->buildRequestURL('elections');
-        // executs a cURL session for the request, and sets the result property
+        // executes a cURL session for the request, and sets the result property
         $this->execute();
         // return the object so methods can be chained
         return $this;
@@ -183,7 +186,7 @@ class Gcia
             }
             // create the HTTP request url
             $this->url = $this->buildRequestURL('voterinfo', $params);
-            // executs a cURL session for the request, and sets the result property
+            // executes a cURL session for the request, and sets the result property
             $this->execute();
             // return the object so methods can be chained
             return $this;
@@ -205,7 +208,7 @@ class Gcia
             $params['address'] = $address;
             // create the HTTP request url
             $this->url = $this->buildRequestURL('representatives', $params);
-            // executs a cURL session for the request, and sets the result property
+            // executes a cURL session for the request, and sets the result property
             $this->execute();
             // return the object so methods can be chained
             return $this;
@@ -225,7 +228,7 @@ class Gcia
             $ocdID = urlencode($ocdID);
             // create the HTTP request url
             $this->url = $this->buildRequestURL('representatives/' . $ocdID);
-            // executs a cURL session for the request, and sets the result property
+            // executes a cURL session for the request, and sets the result property
             $this->execute();
             // return the object so methods can be chained
             return $this;
@@ -235,8 +238,9 @@ class Gcia
     }
 
     /**
-     * Searches for political divisions by their natural name or ocdID. When
-     * making a query an ocdID and you want an exact match it must be passed as
+     * Searches for political divisions by their natural name or ocdID.
+     *
+     * When making a query an ocdID and you want an exact match it must be passed as
      * a literal string.
      */
     public function search($query)
@@ -249,7 +253,7 @@ class Gcia
             $params['query'] = $query;
             // create the HTTP request url
             $this->url = $this->buildRequestURL('divisions', $params);
-            // executs a cURL session for the request, and sets the result property
+            // executes a cURL session for the request, and sets the result property
             $this->execute();
             // return the object so methods can be chained
             return $this;
