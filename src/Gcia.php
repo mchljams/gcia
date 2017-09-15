@@ -34,12 +34,12 @@ class Gcia
     public function __construct($key = null)
     {
         // check to make sure input is a string
-        if (!is_string($key)) {
-            // if its not a string thow an exception
-            throw new \Exception('Your API key is required and must be a string.');
+        if (is_string($key)) {
+          // set the key property
+          $this->key = $key;
         }
-        // set the key property
-        $this->key = $key;
+        // if its not a string thow an exception
+        throw new \Exception('Your API key is required and must be a string.');
     }
 
     /**
