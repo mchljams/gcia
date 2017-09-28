@@ -1,6 +1,8 @@
 <?php
 namespace Mchljams\Gcia;
 
+use Httpful\Request;
+
 /**
  * This class is a PHP wrapper for the Google Civic Information API (Gcia).
  *
@@ -25,21 +27,14 @@ class Gcia
     private $result;
 
     /**
-     * Set the API key, instantiate the Google Civic Information API class.
-     *
-     * @param string $key, The Google API Key
-     *
-     * @throws Exception if input is not a string
+     * Set the API key
      */
-    public function __construct($key = null)
+    public function setKey($key)
     {
-        // check to make sure input is a string
-        if (is_string($key)) {
-          // set the key property
-          $this->key = $key;
-        }
-        // if its not a string thow an exception
-        throw new \Exception('Your API key is required and must be a string.');
+        //
+        $this->key = $key;
+        //
+        return null;
     }
 
     /**
@@ -56,15 +51,22 @@ class Gcia
      */
     private function buildRequestURL($type = null, $params = array())
     {
-        // add the API key into the query string
-        $params['key'] = $this->key;
-        // assemble the request URL
-        $url = $this->base.$this->version.'/' . $type . '/?' . http_build_query($params);
-        // return the string of the request url
-        return $url;
+        // check to make sure input is a string
+        if (is_string($this->key)) {
+            // add the API key into the query string
+            $params['key'] = $this->key;
+            // assemble the request URL
+            $url = $this->base.$this->version.'/' . $type . '/?' . http_build_query($params);
+            // return the string of the request url
+            return $url;
+        }
+        // if its not a string thow an exception
+        throw new \Exception('Your API key is required and must be a string.');
     }
 
-    /* Just a utility method to verify what HTTP request was made */
+    /**
+     * utility method to verify what HTTP request was made 
+     */
     public function getRequestURL()
     {
         // check that the request url property is not null
@@ -77,73 +79,14 @@ class Gcia
     }
 
     /**
-     *
+     * execute the curl request
      */
     private function execute()
     {
-        // initialize a new cURL session and set the handle
-        $ch = curl_init();
-        // Disable SSL verification
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        // set to true (1) to return output as a string
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        // set the url that cURL will fetch
-        curl_setopt($ch, CURLOPT_URL, $this->getRequestURL());
-        // execute the cURL session
-        $result = curl_exec($ch);
-        // check if any cURL error occurred
-        if (!curl_errno($ch)) {
-            // since no cURL errors occured, set the results property
-            $this->result = $result;
-            // close the cURL session, to free the resources
-            curl_close($ch);
-            // return the object so methods can be chained
-            return $this;
-        }
-        // throw exception when a cURL error happens.
-        throw new \Exception('Curl error: ' . curl_error($ch));
-    }
-
-    /**
-     *
-     */
-    public function getJSON()
-    {
-        // check that the result property is not null
-        if ($this->result) {
-            // return the result property JSON string
-            return $this->result;
-        }
-        // thow an exception when the result property is null
-        throw new \Exception('No JSON result to return.');
-    }
-
-    /**
-     *
-     */
-    public function getOBJ()
-    {
-        // check that the result property is not null
-        if ($this->result) {
-            // return the result property JSON string as an object
-            return json_decode($this->result);
-        }
-        // thow an exception when the result property is null
-        throw new \Exception('No JSON result to return as object.');
-    }
-
-    /**
-     *
-     */
-    public function getASSOC()
-    {
-        // check that the result property is not null
-        if ($this->result) {
-            // return the result property JSON string as an accociative array
-            return json_decode($this->result, true);
-        }
-        // thow an exception when the result property is null
-        throw new \Exception('No JSON result to return as associative array.');
+        // executes a cURL session for the request, and sets the result variable
+        $result = Request::get($this->getRequestURL())->send();
+        // return the json result
+        return $result->raw_body;
     }
 
     /**
@@ -153,10 +96,8 @@ class Gcia
     {
         // create the HTTP request url
         $this->url = $this->buildRequestURL('elections');
-        // executes a cURL session for the request, and sets the result property
-        $this->execute();
-        // return the object so methods can be chained
-        return $this;
+        // return the json result
+        return $this->execute();
     }
 
     /**
@@ -186,10 +127,8 @@ class Gcia
             }
             // create the HTTP request url
             $this->url = $this->buildRequestURL('voterinfo', $params);
-            // executes a cURL session for the request, and sets the result property
-            $this->execute();
-            // return the object so methods can be chained
-            return $this;
+            // return the json result
+            return $this->execute();
         }
         // throw exception when required address parameter is null
         throw new \Exception('Address is required.');
@@ -208,10 +147,8 @@ class Gcia
             $params['address'] = $address;
             // create the HTTP request url
             $this->url = $this->buildRequestURL('representatives', $params);
-            // executes a cURL session for the request, and sets the result property
-            $this->execute();
-            // return the object so methods can be chained
-            return $this;
+            // return the json result
+            return $this->execute();
         }
         // throw exception when required address parameter is null
         throw new \Exception('Address is required.');
@@ -228,10 +165,8 @@ class Gcia
             $ocdID = urlencode($ocdID);
             // create the HTTP request url
             $this->url = $this->buildRequestURL('representatives/' . $ocdID);
-            // executes a cURL session for the request, and sets the result property
-            $this->execute();
-            // return the object so methods can be chained
-            return $this;
+            // return the json result
+            return $this->execute();
         }
         // throw exception when required ocdID parameter is null
         throw new \Exception('ocdID is required.');
@@ -253,10 +188,8 @@ class Gcia
             $params['query'] = $query;
             // create the HTTP request url
             $this->url = $this->buildRequestURL('divisions', $params);
-            // executes a cURL session for the request, and sets the result property
-            $this->execute();
-            // return the object so methods can be chained
-            return $this;
+            // return the json result
+            return $this->execute();
         }
         // throw an exception when the query parameter is null
         throw new \Exception('Query is required.');
