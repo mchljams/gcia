@@ -55,8 +55,11 @@ class Gcia
         if (is_string($this->key)) {
             // add the API key into the query string
             $params['key'] = $this->key;
+            // assemble parameters
+            $query = http_build_query($params, null, '&');
+            $string = preg_replace('/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', $query);
             // assemble the request URL
-            $url = $this->base.$this->version.'/' . $type . '/?' . http_build_query($params);
+            $url = $this->base.$this->version.'/' . $type . '/?' . $string;
             // return the string of the request url
             return $url;
         }
