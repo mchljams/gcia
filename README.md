@@ -6,7 +6,21 @@ Lorem Ipsum
 How To Use
 -----
 
-Lorem Ipsum
+```
+composer require mchljams/gcia
+```
+Then in your php file.
+
+```
+$gcia = new Mchljams\Gcia\Gcia();
+$gcia->setKey('YOURKEY');
+```
+or 
+
+```
+use \Mchljams\Gcia\Gcia;
+$gcia = new Gcia();
+```
 
 Unit Tests
 -----

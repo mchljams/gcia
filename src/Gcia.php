@@ -55,8 +55,11 @@ class Gcia
         if (is_string($this->key)) {
             // add the API key into the query string
             $params['key'] = $this->key;
+            // assemble parameters
+            $query = http_build_query($params, null, '&');
+            $string = preg_replace('/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', $query);
             // assemble the request URL
-            $url = $this->base.$this->version.'/' . $type . '/?' . http_build_query($params);
+            $url = $this->base.$this->version.'/' . $type . '/?' . $string;
             // return the string of the request url
             return $url;
         }
@@ -106,13 +109,13 @@ class Gcia
      * Required query parameters: address
      *
      * Optional query parameters: electionID, officialOnly
+     * 
+     * Options : $params items in this array will be passed as HTTP get parametrs in the request
      */
-    public function voterInfoQuery($address, $electionID = null, $officialOnly = false)
+    public function voterInfoQuery($address, $electionID = null, $officialOnly = false, $params = array())
     {
         // check that address is not null, it is required
         if ($address) {
-            // items in this array will be passed as HTTP get parametrs in the request
-            $params = array();
             // add the address to the parameters array
             $params['address'] = $address;
             // check if the optional electionID is not null
@@ -136,13 +139,13 @@ class Gcia
 
     /**
      * Looks up political geography and representative information for a single address.
+     * 
+     * Options : $params items in this array will be passed as HTTP get parametrs in the request
      */
-    public function representativeInfoByAddress($address)
+    public function representativeInfoByAddress($address, $params = array())
     {
         // check that address parameter is not null, it is required
         if ($address) {
-            // items in this array will be passed as HTTP get parametrs in the request
-            $params = array();
             // add the address to the parameters array
             $params['address'] = $address;
             // create the HTTP request url
@@ -156,15 +159,17 @@ class Gcia
 
     /**
      * Looks up representative information for a single geographic division.
+     * 
+     * Options : $params items in this array will be passed as HTTP get parametrs in the request
      */
-    public function representativeInfoByDivision($ocdID)
+    public function representativeInfoByDivision($ocdID, $params = array())
     {
         // check that the ocdID parameter is not null, it is required
         if ($ocdID) {
             // The ocdID string must be url encoded so it can be concatenated onto the request url
             $ocdID = urlencode($ocdID);
             // create the HTTP request url
-            $this->url = $this->buildRequestURL('representatives/' . $ocdID);
+            $this->url = $this->buildRequestURL('representatives/' . $ocdID, $params);
             // return the json result
             return $this->execute();
         }
@@ -177,13 +182,13 @@ class Gcia
      *
      * When making a query an ocdID and you want an exact match it must be passed as
      * a literal string.
+     * 
+     * Options : $params items in this array will be passed as HTTP get parametrs in the request
      */
-    public function search($query)
+    public function search($query, $params = array())
     {
         // check that the query parameter is not null, it is required
         if ($query) {
-            // items in this array will be passed as HTTP get parametrs in the request
-            $params = array();
             // add the query to the parameters array
             $params['query'] = $query;
             // create the HTTP request url
